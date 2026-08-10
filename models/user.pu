@@ -1,0 +1,23 @@
+from sqlmodel import SQLModel, Field, Relationship
+from datetime import datetime
+from typing import Optional, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .document import Document
+
+class User(SQLModel, table=True):
+    # All fields now have explicit type annotations
+    id: Optional[int] = Field(default=None, primary_key=True)
+    username: str = Field(unique=True, index=True, min_length=3, max_length=50)
+    email: str = Field(unique=True, index=True)
+    hashed_password: str = Field(default="")  # Added default
+    full_name: str = Field(min_length=2, max_length=100)
+    role: str = Field(default="staff")
+    is_active: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    last_login: Optional[datetime] = Field(default=None)
+
+    documents: List["Document"] = Relationship(back_populates="uploader")
+
+# ... (UserCreate, UserLogin, UserResponse classes remain the same)
